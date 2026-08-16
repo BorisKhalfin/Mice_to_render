@@ -37,26 +37,23 @@ if not st.session_state.splash_shown:
 # 1. User PW generation
 # ---------------------------------------------------------
 # Pass: 'SIRT6', 'SIRT6Lab', 'SIRT6mice'
-passwords_to_hash = ['SIRT6', 'SIRT6Lab', 'SIRT6mice']
-hashed_passwords = stauth.Hasher.hash_passwords(passwords_to_hash)
-
 credentials = {
     'usernames': {
         'Boris': {
             'name': 'Dr. Boris Khalfin',
-            'password': hashed_passwords[0]  # SIRT6
+            'password': 'SIRT6'
         },
         'Debbie': {
             'name': 'Prof. Debbie Toiber',
-            'password': hashed_passwords[1]  # SIRT6Lab
+            'password': 'SIRT6Lab'
         },
         'LabMember': {
             'name': 'Lab Member',
-            'password': hashed_passwords[2]  # SIRT6mice
+            'password': 'SIRT6mice'
         }
     }
 }
-
+stauth.Hasher.hash_passwords(credentials)
 # ---------------------------------------------------------
 # 2. Authenticate
 # ---------------------------------------------------------
