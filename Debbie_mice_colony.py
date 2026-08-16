@@ -37,22 +37,20 @@ if not st.session_state.splash_shown:
 # 1. User PW generation
 # ---------------------------------------------------------
 # Pass: 'SIRT6', 'SIRT6Lab', 'SIRT6mice'
-hashed_passwords = stauth.Hasher(['SIRT6', 'SIRT6Lab', 'SIRT6mice']).generate()
+passwords_to_hash = ['SIRT6', 'SIRT6Lab', 'SIRT6mice']
+hashed_passwords = stauth.Hasher.hash_passwords(passwords_to_hash)
 
 credentials = {
     'usernames': {
         'Boris': {
-            'email': 'boris@example.com',
             'name': 'Dr. Boris Khalfin',
             'password': hashed_passwords[0]  # SIRT6
         },
         'Debbie': {
-            'email': 'debbie@example.com',
-            'name': 'Debbie',
+            'name': 'Prof. Debbie Toiber',
             'password': hashed_passwords[1]  # SIRT6Lab
         },
         'LabMember': {
-            'email': 'member@example.com',
             'name': 'Lab Member',
             'password': hashed_passwords[2]  # SIRT6mice
         }
@@ -64,21 +62,24 @@ credentials = {
 # ---------------------------------------------------------
 authenticator = stauth.Authenticate(
     credentials,
-    'toiber_lab_cookie',  # cookie
-    'sirt6_secret_key_123', # cookie key
+    'toiber_lab_cookie',
+    'sirt6_secret_key_123',
     cookie_expiry_days=30
 )
 
 # ---------------------------------------------------------
 # 3. Login form
 # ---------------------------------------------------------
-name, authentication_status, username = authenticator.login('Login to Toiber Lab Mice Colony', 'main')
+try:
+    authenticator.login(location='main')
+except TypeError:
+    authenticator.login('Login to see the mice', 'main')
 
-if authentication_status == False:
-    st.error('Mice are hiding in the corner. Please reenter')
+if st.session_state.get("authentication_status") == False:
+    st.error('Mice are hiding, please reenter')
     st.stop()
-elif authentication_status == None:
-    st.warning('Enter the LogIn and Pass to see the mice')
+elif st.session_state.get("authentication_status") is None:
+    st.warning('Please log in to see the mice')
     st.stop()
 
 # ---------------------------------------------------------
