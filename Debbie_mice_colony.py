@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import time
 from PIL import Image
+import streamlit_authenticator as stauth
 
 # ---------------------------------------------------------
 # Splash Screen on start for 5 seconds
@@ -32,6 +33,60 @@ if not st.session_state.splash_shown:
     splash.empty()
     st.rerun()
 
+# ---------------------------------------------------------
+# 1. User PW generation
+# ---------------------------------------------------------
+# Pass: 'SIRT6', 'SIRT6Lab', 'SIRT6mice'
+hashed_passwords = stauth.Hasher(['SIRT6', 'SIRT6Lab', 'SIRT6mice']).generate()
+
+credentials = {
+    'usernames': {
+        'Boris': {
+            'email': 'boris@example.com',
+            'name': 'Dr. Boris Khalfin',
+            'password': hashed_passwords[0]  # SIRT6
+        },
+        'Debbie': {
+            'email': 'debbie@example.com',
+            'name': 'Debbie',
+            'password': hashed_passwords[1]  # SIRT6Lab
+        },
+        'LabMember': {
+            'email': 'member@example.com',
+            'name': 'Lab Member',
+            'password': hashed_passwords[2]  # SIRT6mice
+        }
+    }
+}
+
+# ---------------------------------------------------------
+# 2. Authenticate
+# ---------------------------------------------------------
+authenticator = stauth.Authenticate(
+    credentials,
+    'toiber_lab_cookie',  # cookie
+    'sirt6_secret_key_123', # cookie key
+    cookie_expiry_days=30
+)
+
+# ---------------------------------------------------------
+# 3. Login form
+# ---------------------------------------------------------
+name, authentication_status, username = authenticator.login('Login to Toiber Lab Mice Colony', 'main')
+
+if authentication_status == False:
+    st.error('Mice are hiding in the corner. Please reenter')
+    st.stop()
+elif authentication_status == None:
+    st.warning('Enter the LogIn and Pass to see the mice')
+    st.stop()
+
+# ---------------------------------------------------------
+# 4. Welcome message
+# ---------------------------------------------------------
+st.sidebar.write(f'Welcome to the mice, **{name}**!')
+authenticator.logout('Close the cage', 'sidebar')
+#================================================================================
 # Sidebar logo and link to the website
 try:
     st.sidebar.markdown(
