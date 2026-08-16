@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SIRT6 Mouse Colony Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; background: #f8f9fa; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; }
+        h1 { color: #0d6efd; }
+        .grid { display: flex; gap: 15px; margin: 20px 0; }
+        .card { background: #f1f3f5; padding: 15px; flex: 1; text-align: center; border-radius: 6px; }
+        .num { font-size: 2em; font-weight: bold; color: #0d6efd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SIRT6 Colony Analytics (Render)</h1>
+        <div class="grid">
+            <div class="card"><div>Active Cohort</div><div class="num" id="cohort">--</div></div>
+            <div class="card"><div>Breeding Sets</div><div class="num" id="breeding">--</div></div>
+            <div class="card"><div>Genotypes</div><div class="num" id="genotypes">--</div></div>
+        </div>
+        <p>Status: <strong id="status">Connecting...</strong></p>
+    </div>
+    <script>
+        async function loadData() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                document.getElementById('cohort').innerText = data.active_cohort;
+                document.getElementById('breeding').innerText = data.breeding_sets;
+                document.getElementById('genotypes').innerText = data.genotypes_processed;
+                document.getElementById('status').innerText = data.status;
+            } catch (e) {
+                document.getElementById('status').innerText = 'Error loading data';
+            }
+        }
+        loadData();
+    </script>
+</body>
+</html>
