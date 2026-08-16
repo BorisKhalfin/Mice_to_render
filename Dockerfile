@@ -1,17 +1,20 @@
 FROM python:3.11-slim
 
+# Install Nginx и Supervisor
+RUN apt-get update && apt-get install -y nginx supervisor && rm -rf /var/lib/apt/lists/*
+
+# Install Python
 WORKDIR /app
+RUN pip install --no-cache-dir fastapi uvicorn
 
-# Connecting everything
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Config
+COPY api/main.py /app/main.py
+COPY html /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Taking the code
-COPY Debbie_mice_colony.py .
-COPY DTree.png .
+# Run the Supervisor
+RUN echo '[supervisord]\nnodaemon=true\n\n[program:fastapi]\ncommand=uvicorn main:app --host 127.0.0.1 --port 8000\n\n[program:nginx]\ncommand=nginx -g "daemon off;"' > /etc/supervisor/conf.d/supervisord.conf
 
-# Opening port for Streamlit
-EXPOSE 8501
+EXPOSE 80
 
-# Running Streamlit
-CMD ["python", "-m", "streamlit", "run", "Debbie_mice_colony.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
