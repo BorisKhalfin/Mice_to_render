@@ -82,7 +82,7 @@ elif st.session_state.get("authentication_status") is None:
 # ---------------------------------------------------------
 # 4. Welcome message
 # ---------------------------------------------------------
-st.sidebar.write(f'Welcome to the mice, **{name}**!')
+st.sidebar.write(f'Welcome to see the mice')
 authenticator.logout('Close the cage', 'sidebar')
 #================================================================================
 # Sidebar logo and link to the website
